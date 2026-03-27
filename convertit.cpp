@@ -1,9 +1,5 @@
-/*
- * =============================================================
- *  Convertisseur IEEE 754 - Simple précision (32 bits)
- *  Décimal <-> Binaire
- * =============================================================
- */
+/*  Convertisseur IEEE 754 - Simple precision (32 bits)
+ *  Decimal <-> Binaire*/
 
 #include <iostream>
 #include <string>
@@ -14,12 +10,11 @@
 #include <algorithm>
 #include <limits>
 #include <cstdint>
+#include <iomanip>
 
 using namespace std;
 
-// ============================================================
-//  FONCTION : Retirer les espaces d'une chaîne de caractères
-// ============================================================
+//  FONCTION : Retirer les espaces d'une chaine de caracteres
 string retirerEspaces(const string& chaine) {
     string chaineSansEspaces;
     for (char caractere : chaine) {
@@ -30,10 +25,9 @@ string retirerEspaces(const string& chaine) {
     return chaineSansEspaces;
 }
 
-// ============================================================
-//  FONCTION : Vérifier si une chaîne est un binaire valide
+//  FONCTION : Verifier si une chaîne est un binaire valide
 //             (contient uniquement des 0 et des 1)
-// ============================================================
+
 bool estBinaireValide(const string& chaine) {
     if (chaine.empty()) return false;
     for (char caractere : chaine) {
@@ -44,24 +38,25 @@ bool estBinaireValide(const string& chaine) {
     return true;
 }
 
-// ============================================================
-//  FONCTION : Vérifier si une chaîne est un nombre décimal valide
-//             (entier, flottant, négatif, cas spéciaux inf/nan)
-// ============================================================
+
+//  FONCTION : Verifier si une chaine est un nombre decimal valide
+//             (entier, flottant, negatif, cas speciaux inf/nan)
+
+
 bool estNombreValide(const string& chaine) {
     if (chaine.empty()) return false;
 
-    // Convertir en minuscules pour comparer les cas spéciaux
+    // Convertir en minuscules pour comparer les cas speciaux
     string chaineMinuscule = chaine;
     transform(chaineMinuscule.begin(), chaineMinuscule.end(), chaineMinuscule.begin(), ::tolower);
 
-    // Cas spéciaux acceptés
+    // Cas speciaux acceptes
     if (chaineMinuscule == "inf"  || chaineMinuscule == "+inf" ||
         chaineMinuscule == "-inf" || chaineMinuscule == "nan") {
         return true;
     }
 
-    // Vérification caractère par caractère
+    // Verification caractere par caractere
     int nombreDePoints = 0;
     int nombreDeSignes = 0;
 
@@ -69,22 +64,22 @@ bool estNombreValide(const string& chaine) {
         char caractere = chaine[i];
 
         if (caractere == '+' || caractere == '-') {
-            // Le signe est autorisé uniquement en première position
+            // Le signe est autorise uniquement en premiere position
             if (i != 0) return false;
             nombreDeSignes++;
         }
         else if (caractere == '.' || caractere == ',') {
-            // Un seul point (ou virgule) est autorisé
+            // Un seul point (ou virgule) est autorise
             nombreDePoints++;
             if (nombreDePoints > 1) return false;
         }
         else if (!isdigit(caractere)) {
-            // Tout autre caractère est invalide
+            // Tout autre caractere est invalide
             return false;
         }
     }
 
-    // Rejeter les entrées comme "+", "-", ".", ","
+    // Rejeter les entrees comme "+", "-", ".", ","
     string chaineSansSignes = chaine;
     if (!chaineSansSignes.empty() &&
         (chaineSansSignes[0] == '+' || chaineSansSignes[0] == '-')) {
@@ -96,19 +91,27 @@ bool estNombreValide(const string& chaine) {
         return false;
     }
 
+    // Rejeter les nombres qui commencent par 0 suivi d'un chiffre (ex: 045.26, 007)
+    // Exception : "0" seul et "0.xxx" sont valides
+    if (chaineSansSignes.size() >= 2 &&
+        chaineSansSignes[0] == '0'   &&
+        isdigit(chaineSansSignes[1])) {
+        return false;
+    }
+
     return true;
 }
 
-// ============================================================
-//  FONCTION : Conversion Décimal -> Binaire IEEE 754 (32 bits)
-// ============================================================
+
+//  FONCTION : Conversion Decimal -> Binaire IEEE 754 (32 bits)
+
 void decimalVersBinaire() {
     string entreeUtilisateur;
 
     cout << endl;
-    cout << "===============================================" << endl;
+    cout << " " << endl;
     cout << "   Conversion : Decimal -> Binaire IEEE 754"   << endl;
-    cout << "===============================================" << endl;
+    cout << " " << endl;
 
     // Boucle : redemander tant que l'entrée est invalide
     while (true) {
@@ -118,9 +121,9 @@ void decimalVersBinaire() {
         // Remplacer la virgule par un point si l'utilisateur utilise une virgule
         replace(entreeUtilisateur.begin(), entreeUtilisateur.end(), ',', '.');
 
-        // Vérification de la validité de l'entrée
+        // Verification de la validite de l'entree
         if (estNombreValide(entreeUtilisateur)) {
-            break; // Entrée valide, on sort de la boucle
+            break; // Entree valide, on sort de la boucle
         }
 
         cout << endl;
@@ -145,7 +148,7 @@ void decimalVersBinaire() {
         convertisseur >> nombreFlottant;
     }
 
-    // Copier les bits du float dans un entier non signé de 32 bits
+    // Copier les bits du float dans un entier non signe de 32 bits
     uint32_t bits32;
     memcpy(&bits32, &nombreFlottant, sizeof(bits32));
 
@@ -156,24 +159,24 @@ void decimalVersBinaire() {
 
     int exposantReel = (int)bitsExposant - 127;        // Exposant sans le biais
 
-    // Affichage des résultats
+    // Affichage des resultats
     cout << endl;
     cout << "  Nombre entre       : " << entreeUtilisateur                      << endl;
     cout << endl;
     cout << "  Decomposition IEEE 754 (32 bits) :"                              << endl;
-    cout << "  -----------------------------------------------"                 << endl;
+    cout << "-"                                                                << endl;
     cout << "  Signe     (1 bit)  : " << bitSigne                               << endl;
     cout << "  Exposant  (8 bits) : " << bitset<8>(bitsExposant)
          << "  (valeur brute = "      << bitsExposant
          << ", exposant reel = "      << exposantReel << ")"                    << endl;
     cout << "  Mantisse  (23 bits): " << bitset<23>(bitsMantisse)               << endl;
-    cout << "  -----------------------------------------------"                 << endl;
+    cout << "-"                 << endl;
     cout << "  Representation complete (32 bits) :"                             << endl;
     cout << "  " << bitSigne << " "
          << bitset<8>(bitsExposant) << " "
          << bitset<23>(bitsMantisse)                                            << endl;
 
-    // Détection des cas spéciaux
+    // Detection des cas speciaux
     cout << endl;
     cout << "  Cas special        : ";
     if (bitsExposant == 0xFF && bitsMantisse == 0) {
@@ -189,16 +192,15 @@ void decimalVersBinaire() {
     }
 }
 
-// ============================================================
 //  FONCTION : Conversion Binaire IEEE 754 (32 bits) -> Décimal
-// ============================================================
+
 void binaireVersDecimal() {
     string entreeUtilisateur;
 
     cout << endl;
-    cout << "===============================================" << endl;
+    cout << "-" << endl;
     cout << "   Conversion : Binaire IEEE 754 -> Decimal"   << endl;
-    cout << "===============================================" << endl;
+    cout << "-" << endl;
     cout << "Entrez 32 bits IEEE 754 (espaces autorises)"   << endl;
     cout << "Exemple : 0 10000010 01101000000110001001011"  << endl;
     cout << "Votre entree : ";
@@ -208,7 +210,7 @@ void binaireVersDecimal() {
     // Retirer les espaces
     string chaineBinaire = retirerEspaces(entreeUtilisateur);
 
-    // Boucle : redemander tant que l'entrée contient des caractères invalides
+    // Boucle : redemander tant que l'entree contient des caracteres invalides
     while (!estBinaireValide(chaineBinaire)) {
         cout << endl;
         cout << "  ERREUR : l'entree contient des caracteres invalides." << endl;
@@ -219,7 +221,7 @@ void binaireVersDecimal() {
         chaineBinaire = retirerEspaces(entreeUtilisateur);
     }
 
-    // Si moins de 32 bits : compléter avec des 0 à droite
+    // Si moins de 32 bits : completer avec des 0 à droite
     if (chaineBinaire.size() < 32) {
         int nombreDeZerosAjoutes = 32 - chaineBinaire.size();
         cout << endl;
@@ -250,7 +252,7 @@ void binaireVersDecimal() {
             chaineBinaire = retirerEspaces(entreeUtilisateur);
         }
 
-        // Recompléter si nécessaire
+        // Recompleter si necessaire
         if (chaineBinaire.size() < 32) {
             int nombreDeZerosAjoutes = 32 - chaineBinaire.size();
             cout << endl;
@@ -281,19 +283,19 @@ void binaireVersDecimal() {
     // Affichage de la décomposition
     cout << endl;
     cout << "  Decomposition IEEE 754 :"                                        << endl;
-    cout << "  -----------------------------------------------"                 << endl;
+    cout << "-"                                                                 << endl;
     cout << "  Signe     (1 bit)  : " << bitSigne                               << endl;
     cout << "  Exposant  (8 bits) : " << bitset<8>(bitsExposant)
          << "  (valeur brute = "      << bitsExposant
          << ", exposant reel = "      << exposantReel << ")"                    << endl;
     cout << "  Mantisse  (23 bits): " << bitset<23>(bitsMantisse)               << endl;
-    cout << "  -----------------------------------------------"                 << endl;
+    cout << "-"                                                                 << endl;
 
     // Affichage du résultat selon le cas
     cout << "  Valeur decimale    : ";
     if (bitsExposant == 0xFF && bitsMantisse == 0) {
         cout << (bitSigne ? "-Infini" : "+Infini")                                      << endl;
-        cout << "  Cas special        : Infini " << (bitSigne ? "negatif" : "positif") << endl;
+        cout << "  Cas special        : Infini " << (bitSigne ? "negatif" : "positif")  << endl;
     } else if (bitsExposant == 0xFF && bitsMantisse != 0) {
         cout << "NaN (Not a Number)"                                                    << endl;
         cout << "  Cas special        : NaN"                                            << endl;
@@ -301,28 +303,28 @@ void binaireVersDecimal() {
         cout << (bitSigne ? "-0" : "+0")                                                << endl;
         cout << "  Cas special        : Zero " << (bitSigne ? "negatif" : "positif")   << endl;
     } else if (bitsExposant == 0) {
-        cout << nombreFlottant                                                          << endl;
+        cout << fixed << setprecision(6) << nombreFlottant << endl;
         cout << "  Cas special        : Nombre denormalise"                             << endl;
     } else {
-        cout << nombreFlottant                                                          << endl;
+        cout << fixed << setprecision(6) << nombreFlottant << endl;
         cout << "  Cas special        : Aucun (nombre normalise)"                       << endl;
     }
 }
 
-// ============================================================
+
 //  FONCTION PRINCIPALE : Menu interactif
-// ============================================================
+
 int main() {
     int choixUtilisateur;
 
-    cout << "=================================================" << endl;
-    cout << "   Convertisseur IEEE 754 - Simple precision"     << endl;
-    cout << "=================================================" << endl;
+    cout << "-"                                                     << endl;
+    cout << "   Convertisseur IEEE 754 - Simple precision"          << endl;
+    cout << "-"                                                     << endl;
     cout << endl;
     cout << "  Choisissez une option :"                             << endl;
     cout << "  1 - Convertir un nombre decimal en binaire IEEE 754" << endl;
     cout << "  2 - Convertir un binaire IEEE 754 en nombre decimal" << endl;
-    cout << "  3 - Quitter"                                         << endl;
+    cout << "  0 - Quitter"                                         << endl;
 
     // Boucle : redemander tant que le choix est invalide
     while (true) {
@@ -334,16 +336,16 @@ int main() {
             cin.clear();
             cin.ignore(1000, '\n');
             cout << endl;
-            cout << "  ERREUR : veuillez entrer 1, 2 ou 3." << endl;
+            cout << "  ERREUR : veuillez entrer 0, 1 ou 2." << endl;
             continue;
         }
 
-        if (choixUtilisateur >= 1 && choixUtilisateur <= 3) {
+        if (choixUtilisateur >= 0 && choixUtilisateur <= 2) {
             break;
         }
 
         cout << endl;
-        cout << "  ERREUR : choix invalide. Veuillez entrer 1, 2 ou 3." << endl;
+        cout << "  ERREUR : choix invalide. Veuillez entrer 0, 1 ou 2." << endl;
     }
 
     switch (choixUtilisateur) {
@@ -353,7 +355,7 @@ int main() {
         case 2:
             binaireVersDecimal();
             break;
-        case 3:
+        case 0:
             cout << endl;
             cout << "  Au revoir !" << endl;
             break;
