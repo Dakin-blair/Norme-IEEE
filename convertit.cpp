@@ -15,6 +15,8 @@
 using namespace std;
 
 //  FONCTION : Retirer les espaces d'une chaine de caracteres
+//  On cree une chaine vide, on ajoute des caracteres de la chaine d'origine sauf les espaces puit on la retourne 
+
 string retirerEspaces(const string& chaine) {
     string chaineSansEspaces;
     for (char caractere : chaine) {
@@ -27,6 +29,7 @@ string retirerEspaces(const string& chaine) {
 
 //  FONCTION : Verifier si une chaîne est un binaire valide
 //             (contient uniquement des 0 et des 1)
+//  On parcourt la chaine caractere par caractere, si elle contient des caracteres differents de 0 ou 1 on retourne false sinon on retourne true
 
 bool estBinaireValide(const string& chaine) {
     if (chaine.empty()) return false;
@@ -41,7 +44,8 @@ bool estBinaireValide(const string& chaine) {
 
 //  FONCTION : Verifier si une chaine est un nombre decimal valide
 //             (entier, flottant, negatif, cas speciaux inf/nan)
-
+//  On verifie d'abord si la chaine est vide. Ensuite, on verifie les cas speciaux (inf, nan), on parcourt la chaine caractere par caractere pour s'assurer qu'elle contient uniquement de chiffre.
+//  Un seul signe en premier position, un seul point ou virgule, puis on rejette les nombres commencants par 0 suivie d'un autres chiffre directement.  
 
 bool estNombreValide(const string& chaine) {
     if (chaine.empty()) return false;
@@ -103,7 +107,9 @@ bool estNombreValide(const string& chaine) {
 }
 
 
-//  FONCTION : Conversion Decimal -> Binaire IEEE 754 (32 bits)
+//  FONCTION : Conversion Decimal -> Binaire IEEE 754 (32 bits).
+//  On lit l'entree de l'utilisateur, on valide que c'est un nombre decimal valide,
+//  on le convertir en float, on copie ses bits dans un entier 32 bits via memcpy, puis on extrait et affiche le signe, l'exposant et la mantisse selon la norme IEEE 754
 
 void decimalVersBinaire() {
     string entreeUtilisateur;
@@ -193,6 +199,9 @@ void decimalVersBinaire() {
 }
 
 //  FONCTION : Conversion Binaire IEEE 754 (32 bits) -> Décimal
+//  On lit la chaine binaire de l'utilisateur, on retire les espaces, on valide qu'elle continet uniquement les 0 et les 1,
+//  on complete avec des 0 si le nombre de caractere est inferieure a 32 bits, on reconstruit l'entree 32 bits, on copie ces bits dans un float via memcpy,
+//  puis on extrait et affiche le signe, l'exposant, la mantisse et la valeur decimale.
 
 void binaireVersDecimal() {
     string entreeUtilisateur;
@@ -313,6 +322,7 @@ void binaireVersDecimal() {
 
 
 //  FONCTION PRINCIPALE : Menu interactif
+//  On affiche le menu, on valide le choix de l'utilisateur en boucle jusqu'a ce qu'il entre 0, 1 ou 2, puis on appelle la fonction correspondante.
 
 int main() {
     int choixUtilisateur;
