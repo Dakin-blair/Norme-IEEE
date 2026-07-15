@@ -31,6 +31,7 @@ jobs:
 
       - name: Compiler le moteur en WebAssembly
         run: |
+          mkdir -p web/dist
           em++ -std=c++17 -O3 \
             src/ieee754_core.cpp web/web.cpp \
             -I src \
