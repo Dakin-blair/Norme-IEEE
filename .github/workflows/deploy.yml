@@ -1,0 +1,55 @@
+name: Compiler et deployer sur GitHub Pages
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Recuperer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Emscripten
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: 3.1.6
+
+      - name: Compiler le moteur en WebAssembly
+        run: |
+          em++ -std=c++17 -O3 \
+            src/ieee754_core.cpp web/web.cpp \
+            -I src \
+            -s WASM=1 -s SINGLE_FILE=1 -s MODULARIZE=1 -s EXPORT_NAME='IEEE754Module' \
+            -s EXPORTED_FUNCTIONS='["_decimalVersBinaireJSON","_binaireVersDecimalJSON"]' \
+            -s EXPORTED_RUNTIME_METHODS='["ccall","cwrap"]' \
+            -s ENVIRONMENT='web' \
+            -s ALLOW_MEMORY_GROWTH=0 \
+            --no-entry \
+            -o web/dist/ieee754.js
+
+      - name: Configurer GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Preparer l'artefact (dossier web/)
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "web"
+
+      - name: Deployer
+        id: deployment
+        uses: actions/deploy-pages@v4
