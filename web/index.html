@@ -6,7 +6,7 @@
 <title>Convertisseur IEEE 754</title>
 <meta name="description" content="Convertisseur decimal <-> binaire IEEE 754 simple precision, moteur C++ compile en WebAssembly.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:            #9400D3;
@@ -22,8 +22,9 @@
     --mantisse:      #00d9c0;
     --ok:            #4be38a;
     --error:         #c0392b;
-    --font-display:  'Space Grotesk', system-ui, sans-serif;
+    --font-display:  'Outfit', system-ui, sans-serif;
     --font-mono:     'IBM Plex Mono', 'Courier New', monospace;
+    --font-eyebrow:  'JetBrains Mono', 'Courier New', monospace;
   }
   *{ box-sizing:border-box; }
   body{
@@ -37,7 +38,7 @@
   .wrap{ max-width:920px; margin:0 auto; padding:64px 24px 96px; }
   .eyebrow{
     display:flex; align-items:center; gap:10px;
-    font-family:var(--font-mono); font-size:12.5px; letter-spacing:.14em;
+    font-family:var(--font-display); font-weight:600; font-size:13px; letter-spacing:.08em;
     text-transform:uppercase; color:var(--text-light); margin-bottom:18px;
   }
   .eyebrow .dot{ width:8px; height:8px; border-radius:1px; background:var(--exposant); box-shadow:0 0 8px var(--exposant); }
@@ -103,14 +104,15 @@
 <div class="wrap">
 
   <header class="site-header">
-    <div class="eyebrow"><span class="dot"></span>Simple precision &middot; 32 bits &middot; IEEE 754-2008</div>
+    <div class="eyebrow">Simple precision &middot; 32 bits &middot; IEEE 754</div>
     <h1>Convertisseur <span>decimal &harr; binaire</span></h1>
     <p class="lede">
-      Convertit un nombre a virgule flottante en sa representation binaire IEEE 754
-      (signe, exposant, mantisse), ou inversement reconstruit la valeur decimale
-      a partir de 32 bits &mdash; en temps reel, au fur et a mesure de la saisie.
+      Choisis un sens de conversion, tape ta valeur, et regarde le resultat se construire
+      en direct : les 32 cases representent chaque bit du nombre : jaune pour le signe,
+      orange pour l'exposant, turquoise pour la mantisse. Le detail (valeur reconstruite,
+      cas special) s'affiche juste en dessous.
     </p>
-    <div class="engine-status" id="engine-status"><span class="led"></span><span id="engine-status-text">Chargement du moteur WebAssembly...</span></div>
+    <div class="engine-status" id="engine-status" style="display:none;"><span class="led"></span><span id="engine-status-text">Chargement du moteur WebAssembly...</span></div>
   </header>
 
   <main>
