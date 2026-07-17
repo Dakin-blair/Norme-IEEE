@@ -51,3 +51,4 @@ g++ -std=c++17 -O2 src/main.cpp src/ieee754_core.cpp -o convertit
 ```bash
 ./build.sh
 ```
+https://dakin-blair.github.io/Norme-IEEE/
